@@ -15,16 +15,41 @@ function App() {
           <div className="navbar mb-4">
             <NavBar />
           </div>
-          <div className="split flex gap-4">
 
-            <div className="left border-2 p-4 w-1/3">
-              <Queue className="" />
-              <Player className="min-h-auto" />
+          <div className="split flex gap-4 h-[80vh]">
+            {/* LEFT FIXED SECTION */}
+            <div className="left border-2 p-4 w-1/3 sticky top-4 h-fit">
+              <Queue />
+              <Player />
             </div>
 
-            <div className="right border-2 p-4 w-2/3">
-          
+            {/* RIGHT SCROLLABLE SECTION */}
+            <div className="right border-2 p-4 w-2/3 overflow-y-auto scrollbar-hide">
+              {/* SONGS SECTION */}
+              <h2 className="text-xl font-semibold ml-2 mb-2">🎵 Songs</h2>
               <div className="songs flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+              </div>
+
+              {/* PLAYLISTS SECTION */}
+              <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">🎧 Playlists</h2>
+              <div className="playlists flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+              </div>
+
+              {/* TRENDING SECTION */}
+              <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">📈 Trending</h2>
+              <div className="trending flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
                 <Card />
                 <Card />
                 <Card />
@@ -36,7 +61,6 @@ function App() {
           </div>
         </div>
       </div>
-
     </>
   );
 }
