@@ -23,7 +23,15 @@ function App() {
             </div>
 
             <div className="right border-2 p-4 w-2/3">
-              <Card />
+          
+              <div className="songs flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+                <Card />
+              </div>
             </div>
           </div>
         </div>
