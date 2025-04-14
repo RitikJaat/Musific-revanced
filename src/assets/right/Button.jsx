@@ -9,16 +9,6 @@ const Buttons = () => {
 
         <button type="button" className="btn">
           <div className="content">
-            <Search className="icon" />
-            <strong>Search</strong>
-          </div>
-          <div id="container-stars"><div id="stars" /></div>
-          <div id="glow"><div className="circle" /><div className="circle" /></div>
-        </button>
-
-
-        <button type="button" className="btn">
-          <div className="content">
             <Home className="icon" />
             <strong>HOME</strong>
           </div>

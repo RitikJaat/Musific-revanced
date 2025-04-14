@@ -125,7 +125,7 @@ const Playlists = () => {
             </button>
           </div>
           
-          <div className="playlist-songs">
+          <div className="playlist-songs scrollbar-hide">
             {activePlaylistSongs.map((song, index) => (
               <div 
                 key={`${song.id}-${index}`}

@@ -11,10 +11,12 @@ const NavBar = () => {
       <div className="left ">
         <div className='logo px-2 cursor-pointer'><img src={textLogo} alt="Logo" draggable="false" className="h-8 invert-25 " /></div>
       </div>
+      
+      <div className="right  gap-2 flex p-2 items-center justify-center">
+      
       <div className="middle flex-grow mx-4">
         <Search />
       </div>
-      <div className="right  gap-2 flex p-2 items-center justify-center">
         <Button/>
       </div>
     </div>
