@@ -5,8 +5,6 @@ import Queue from './assets/player/Queue';
 import Card, { StyledWrapper } from './assets/player/Card';
 import Playlists from './assets/Playlists';
 import { MusicProvider, useMusicContext } from './context/MusicContext';
-import './App.css';
-import './assets/playlist-styles.css';
 
 // Playlist search result card component
 const PlaylistCard = ({ playlist, onPlay }) => {
@@ -103,20 +101,15 @@ const ContentArea = () => {
     setIsSearchLoading(true);
     try {
       // Load the playlist
-      console.log(`Loading playlist ${playlistName} (ID: ${playlistId})`);
       const response = await loadAndPlayPlaylist(playlistId, false); // Added param to not auto-play
       
       if (response && response.success && response.songs) {
-        console.log(`Loaded playlist with ${response.songs.length} songs. Displaying all songs.`);
-        
-        // Set the active playlist with all songs
+        // Set the active playlist
         setSearchActivePlaylist(playlistName);
         setSearchActivePlaylistSongs(response.songs);
         
         // Switch to home view (we'll display the playlist there)
         setActiveView('home');
-      } else {
-        console.error("Failed to load playlist songs:", response);
       }
     } catch (error) {
       console.error("Error loading playlist:", error);
@@ -212,9 +205,8 @@ const ContentArea = () => {
                     </div>
                   </div>
                   
-                  {/* Playlist songs in vertical list - display ALL songs without any limit */}
+                  {/* Playlist songs in vertical list */}
                   <div className="playlist-songs">
-                    {/* Map over ALL songs in the playlist - no slicing or limiting */}
                     {searchActivePlaylistSongs.map((song, index) => (
                       <div 
                         key={`${song.id}-${index}`}
@@ -273,7 +265,7 @@ const ContentArea = () => {
                   <h2 className="text-xl font-semibold ml-2 mb-2">📈 Trending</h2>
                   <div className="trending flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
                     {trendingSongs && trendingSongs.length > 0 ? (
-                      trendingSongs.slice(0, 20).map((item) => (
+                      trendingSongs.slice(0, 10).map((item) => (
                         <Card key={item.id} item={item} updateQueue={true} />
                       ))
                     ) : (
@@ -341,7 +333,7 @@ const ContentArea = () => {
                   <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">🏆 Top 100</h2>
                   <div className="top-100 flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
                     {top100Songs && top100Songs.length > 0 ? (
-                      top100Songs.slice(0, 30).map((item) => (
+                      top100Songs.slice(0, 15).map((item) => (
                         <Card key={item.id} item={item} updateQueue={true} />
                       ))
                     ) : (

@@ -1,11 +1,114 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useMusicContext } from '../../context/MusicContext';
 
-const Card = () => {
+const Card = ({ item, updateQueue = true }) => {
+    const { playSong, addToQueue, getHighestQualityUrl } = useMusicContext();
+
+    if (!item) return null;
+
+    const handlePlay = () => {
+        // Find the specific container this card belongs to
+        const currentCard = document.querySelector(`[data-song-id="${item.id}"]`);
+        if (!currentCard) {
+            console.warn('Current card element not found');
+            playSong(item, [], updateQueue);
+            return;
+        }
+        
+        // Find the nearest song list container to get all sibling songs
+        const nearestContainer = findNearestSongContainer(currentCard);
+        let songList = [];
+        
+        if (nearestContainer) {
+            // Get all Card elements within the container to build the song list
+            const allItems = nearestContainer.querySelectorAll('[data-song-id]');
+            
+            // Make sure we have a valid set of items
+            if (allItems && allItems.length > 0) {
+                console.log('Found song container with', allItems.length, 'songs');
+                
+                songList = Array.from(allItems).map(el => {
+                    try {
+                        const songJson = el.getAttribute('data-song-json');
+                        if (songJson) {
+                            return JSON.parse(songJson);
+                        }
+                        return null;
+                    } catch (e) {
+                        console.error('Error parsing song JSON:', e);
+                        return null;
+                    }
+                }).filter(Boolean); // Remove any null items
+                
+                console.log('Built song list with', songList.length, 'valid songs');
+            } else {
+                console.warn('No song items found in container');
+            }
+        } else {
+            console.warn('Could not find nearest song container');
+        }
+        
+        // Play the song and pass the song list for queuing
+        // Only update queue if updateQueue prop is true
+        playSong(item, songList, updateQueue);
+    };
+
+    const findNearestSongContainer = (element) => {
+        if (!element) return null;
+        if (element.classList.contains('songs') || 
+            element.classList.contains('trending') || 
+            element.classList.contains('playlists') ||
+            element.classList.contains('search-results') ||
+            element.classList.contains('att-hits') ||
+            element.classList.contains('new-releases') ||
+            element.classList.contains('haryanvi') ||
+            element.classList.contains('top-100') ||
+            element.classList.contains('punjabi-hits') ||
+            element.classList.contains('playlist-songs')) {
+            return element;
+        }
+        return findNearestSongContainer(element.parentElement);
+    };
+
+    const handleAddToQueue = (e) => {
+        e.stopPropagation();
+        addToQueue(item);
+    };
+
+    // Get artist name(s)
+    const artistNames = item.artists?.primary?.map(artist => artist.name).join(', ') || 'Unknown Artist';
+    
+    // Get highest quality image
+    const imageUrl = item.image ? getHighestQualityUrl(item.image) : 'https://c.saavncdn.com/editorial/AttHits_20250402103243_500x500.jpg';
+    
+    // Format play count
+    const formatPlayCount = (count) => {
+        if (!count) return '0';
+        
+        if (count >= 1000000) {
+            return `${(count / 1000000).toFixed(1)}M`;
+        } else if (count >= 1000) {
+            return `${(count / 1000).toFixed(1)}K`;
+        }
+        
+        return `${count}`;
+    };
+    
+    // Get play count or use a fallback
+    const playCount = item.playCount || Math.floor(Math.random() * 500000) + 10000; // fallback for demo
+    
+    // Stringify item for data attribute
+    const itemJson = JSON.stringify(item);
+    
     return (
-        <StyledWrapper>
+        <StyledWrapper 
+            onClick={handlePlay} 
+            data-song-id={item.id} 
+            data-song-json={itemJson}
+        >
             <div className="card">
-                <div className="top-section">
+                <div className="top-section" style={{ backgroundImage: `url(${imageUrl})` }}>
                     <div className="border" />
                     <div className="icons">
                         <div className="logo">
@@ -15,22 +118,24 @@ const Card = () => {
                                 <path fill="white" d="M2.86102e-06 83.2195C2.86102e-06 80.5524 1.96995 78.3902 4.4 78.3902H83.6C86.0301 78.3902 88 80.5524 88 83.2195V89.1707C88 91.8379 86.0301 94 83.6 94H4.4C1.96995 94 0 91.8379 0 89.1707L2.86102e-06 83.2195Z" />
                             </svg>
                         </div>
+                        <div className="add-to-queue" onClick={handleAddToQueue}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
                 <div className="bottom-section">
-                    <span className="title">UNIVERSE OF UI</span>
+                    <span className="title">{(item.name || 'Unknown Track').replace(/ \(From .*?\)$/, '')}</span>
                     <div className="row row1">
-                        <div className="item">
-                            <span className="big-text">2626</span>
-                            <span className="regular-text">UI elements</span>
+                        <div className="item artist-container">
+                            <span className="regular-text">{artistNames}</span>
                         </div>
-                        <div className="item">
-                            <span className="big-text">100%</span>
-                            <span className="regular-text">Free for use</span>
-                        </div>
-                        <div className="item">
-                            <span className="big-text">38,631</span>
-                            <span className="regular-text">Contributers</span>
+                        <div className="item play-count-container">
+                            <span className="play-count">
+                                <span className="count-value">{formatPlayCount(playCount)}</span>
+                                <span className="count-label">plays</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -39,15 +144,26 @@ const Card = () => {
     );
 }
 
+const formatDuration = (seconds) => {
+    if (!seconds) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
 const StyledWrapper = styled.div`
   .card {
     width: 230px;
+    height: 280px; /* Set fixed height for consistency */
     border-radius: 20px;
     background: #1b233d;
     padding: 5px;
     overflow: hidden;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
     transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
   }
 
   .card:hover {
@@ -59,10 +175,10 @@ const StyledWrapper = styled.div`
     border-radius: 15px;
     display: flex;
     flex-direction: column;
-    background-image: url('https://c.saavncdn.com/editorial/AttHits_20250402103243_500x500.jpg');
-    background-size: contain;
+    background-size: cover;
     background-position: center;
     position: relative;
+    flex-shrink: 0; /* Prevent shrinking */
   }
 
   .card .top-section .border {
@@ -119,9 +235,20 @@ const StyledWrapper = styled.div`
     height: 100%;
   }
 
+  .card .top-section .icons .add-to-queue {
+    height: 100%;
+    aspect-ratio: 1;
+    padding: 3px 15px 3px 0;
+    cursor: pointer;
+  }
+
   .card .bottom-section {
     margin-top: 15px;
     padding: 10px 5px;
+    display: flex;
+    flex-direction: column;
+    height: 100px; /* Fixed height for bottom section */
+    flex-grow: 1; /* Allow to fill available space */
   }
 
   .card .bottom-section .title {
@@ -131,34 +258,76 @@ const StyledWrapper = styled.div`
     color: white;
     text-align: center;
     letter-spacing: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 10px;
   }
 
   .card .bottom-section .row {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    align-items: center;
+    margin-top: 5px;
+    min-height: 40px; /* Ensure minimum height */
+    position: relative;
   }
 
   .card .bottom-section .row .item {
-    flex: 30%;
-    text-align: center;
     padding: 5px;
     color: rgba(170, 222, 243, 0.721);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-
-  .card .bottom-section .row .item .big-text {
-    font-size: 12px;
-    display: block;
+  
+  .card .bottom-section .row .artist-container {
+    flex: 2;
+    text-align: left;
+    padding-left: 10px;
+    max-width: 55%;
+    overflow: hidden;
+  }
+  
+  .card .bottom-section .row .play-count-container {
+    flex: 1;
+    text-align: right;
+    padding-right: 10px;
+    min-width: 45%; /* Ensure play count has enough space */
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .card .bottom-section .row .item .regular-text {
-    font-size: 9px;
+    font-size: 10px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+    max-width: 100%; /* Limit width to parent container */
   }
-
-  .card .bottom-section .row .item:nth-child(2) {
-    border-left: 1px solid rgba(255, 255, 255, 0.126);
-    border-right: 1px solid rgba(255, 255, 255, 0.126);
+  
+  .card .bottom-section .row .play-count {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .card .bottom-section .row .count-value {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+  
+  .card .bottom-section .row .count-label {
+    font-size: 9px;
+    opacity: 0.8;
   }
 `;
 
 export default Card;
+export { StyledWrapper };
