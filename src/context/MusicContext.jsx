@@ -89,6 +89,15 @@ export const MusicProvider = ({ children }) => {
     });
   }, [currentSong, isPlaying]);
 
+  // Update document title when current song changes
+  useEffect(() => {
+    if (currentSong) {
+      document.title = `${currentSong.name} - Musific`;
+    } else {
+      document.title = 'Musific';
+    }
+  }, [currentSong]);
+
   // Force audio to load when current song changes
   useEffect(() => {
     const loadAudio = async () => {

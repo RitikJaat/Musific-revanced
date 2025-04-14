@@ -155,14 +155,14 @@ const ContentArea = () => {
 
       <div className="split flex gap-4 h-[80vh]">
         {/* LEFT FIXED SECTION */}
-        <div className="left border-2 p-4 w-1/3 sticky top-4 h-fit">
+        <div className="left p-4 w-1/3 sticky top-4 h-fit rounded-xl bg-gradient-to-br from-[#1b233d]/20 to-[#1b233d]/50 backdrop-blur-md shadow-lg">
           <Queue />
           <div className="my-6"></div>
           <Player />
         </div>
 
         {/* RIGHT SCROLLABLE SECTION */}
-        <div className="right border-2 p-4 w-2/3 overflow-y-auto scrollbar-hide">
+        <div className="right p-4 w-2/3 overflow-y-auto scrollbar-hide rounded-xl bg-gradient-to-br from-[#1b233d]/20 to-[#1b233d]/40 backdrop-blur-md shadow-lg">
           {activeView === 'home' ? (
             /* HOME VIEW */
             <>
@@ -370,8 +370,8 @@ function App() {
   return (
     <MusicProvider>
       {/* MAIN CONTENT */}
-      <div className="relative z-10 Homepage min-h-screen bg-black text-white p-4">
-        <div className="hompeageContent border-2 min-h-[90vh] rounded-3xl p-4 bg-black/70 backdrop-blur-md">
+      <div className="relative z-10 Homepage min-h-screen bg-gradient-to-br from-black to-[#131b2e] text-white p-6">
+        <div className="hompeageContent min-h-[90vh] rounded-3xl p-4 backdrop-blur-md">
           <ContentArea />
         </div>
       </div>
