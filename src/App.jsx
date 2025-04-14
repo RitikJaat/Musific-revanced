@@ -95,6 +95,7 @@ const ContentArea = () => {
   const [selectedArtist, setSelectedArtist] = useState(null);
   const [searchActivePlaylist, setSearchActivePlaylist] = useState(null);
   const [searchActivePlaylistSongs, setSearchActivePlaylistSongs] = useState([]);
+  const [showMobileQueue, setShowMobileQueue] = useState(false);
 
   // Handle viewing a playlist from search
   const handleViewPlaylist = async (playlistId, playlistName) => {
@@ -135,7 +136,7 @@ const ContentArea = () => {
 
   return (
     <>
-      <div className="navbar mb-4">
+      <div className="navbar mb-4 overflow-x-hidden">
         <NavBar />
         <div className="view-selector flex justify-center gap-4 mt-4">
           <button 
@@ -153,22 +154,40 @@ const ContentArea = () => {
         </div>
       </div>
 
-      <div className="split flex gap-4 h-[80vh]">
-        {/* LEFT FIXED SECTION */}
-        <div className="left p-4 w-1/3 sticky top-4 h-fit rounded-xl bg-gradient-to-br from-[#1b233d]/20 to-[#1b233d]/50 backdrop-blur-md shadow-lg">
+      {/* Mobile Queue Sidebar */}
+      <div className={`md:hidden fixed inset-0 bg-black/80 z-40 transition-transform duration-300 ${showMobileQueue ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="h-full w-[85%] ml-auto bg-gradient-to-br from-[#1b233d] to-[#131b2e] p-4 overflow-y-auto overflow-x-hidden scrollbar-hide">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-[#aadeef]">Queue</h2>
+            <button 
+              className="text-white" 
+              onClick={() => setShowMobileQueue(false)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <Queue />
+        </div>
+      </div>
+
+      <div className="split flex flex-col md:flex-row gap-4 h-auto md:h-[80vh] pb-24 md:pb-0 overflow-x-hidden">
+        {/* LEFT FIXED SECTION - Only visible on desktop */}
+        <div className="hidden md:block left p-4 w-full md:w-1/3 sticky top-4 h-fit rounded-xl bg-gradient-to-br from-[#1b233d]/20 to-[#1b233d]/50 backdrop-blur-md shadow-lg overflow-hidden">
           <Queue />
           <div className="my-6"></div>
           <Player />
         </div>
 
         {/* RIGHT SCROLLABLE SECTION */}
-        <div className="right p-4 w-2/3 overflow-y-auto scrollbar-hide rounded-xl bg-gradient-to-br from-[#1b233d]/20 to-[#1b233d]/40 backdrop-blur-md shadow-lg">
+        <div className="right p-4 w-full md:w-2/3 overflow-y-auto overflow-x-hidden scrollbar-hide rounded-xl bg-gradient-to-br from-[#1b233d]/20 to-[#1b233d]/40 backdrop-blur-md shadow-lg">
           {activeView === 'home' ? (
             /* HOME VIEW */
             <>
               {/* SEARCH PLAYLIST VIEW (when a playlist is selected from search) */}
               {searchActivePlaylist && searchActivePlaylistSongs.length > 0 ? (
-                <div className="search-playlist-view mb-8">
+                <div className="search-playlist-view mb-8 overflow-x-hidden">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">
                       {searchActivePlaylist}
@@ -245,7 +264,7 @@ const ContentArea = () => {
                   {searchResults && searchResults.length > 0 && (
                     <>
                       <h2 className="text-xl font-semibold ml-2 mb-2">🔍 Song Results</h2>
-                      <div className="search-results flex overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1 gap-3">
+                      <div className="search-results flex overflow-x-scroll overflow-y-hidden scrollbar-hide m-1 md:m-2 py-2 px-1 gap-2 md:gap-3 max-w-full">
                         {searchResults.map((item) => (
                           <Card key={item.id} item={item} updateQueue={true} />
                         ))}
@@ -256,8 +275,8 @@ const ContentArea = () => {
                   {/* PLAYLIST SEARCH RESULTS */}
                   {searchPlaylistResults && searchPlaylistResults.length > 0 && (
                     <>
-                      <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">📑 Playlist Results</h2>
-                      <div className="playlist-results flex overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1 gap-4">
+                      <h2 className="text-xl font-semibold ml-2 mt-4 md:mt-6 mb-2">📑 Playlist Results</h2>
+                      <div className="playlist-results flex overflow-x-scroll overflow-y-hidden scrollbar-hide m-1 md:m-2 py-2 px-1 gap-2 md:gap-4 max-w-full">
                         {searchPlaylistResults.map((playlist) => (
                           <PlaylistCard
                             key={playlist.id}
@@ -271,7 +290,7 @@ const ContentArea = () => {
 
                   {/* TRENDING SECTION */}
                   <h2 className="text-xl font-semibold ml-2 mb-2">📈 Trending</h2>
-                  <div className="trending flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                  <div className="trending flex gap-2 md:gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-1 md:m-2 py-2 px-1 max-w-full">
                     {trendingSongs && trendingSongs.length > 0 ? (
                       trendingSongs.slice(0, 20).map((item) => (
                         <Card key={item.id} item={item} updateQueue={true} />
@@ -287,8 +306,8 @@ const ContentArea = () => {
                   </div>
 
                   {/* ATT HITS SECTION */}
-                  <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">🔥 Att Hits</h2>
-                  <div className="att-hits flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                  <h2 className="text-xl font-semibold ml-2 mt-4 md:mt-6 mb-2">🔥 Att Hits</h2>
+                  <div className="att-hits flex gap-2 md:gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-1 md:m-2 py-2 px-1 max-w-full">
                     {attHits && attHits.length > 0 ? (
                       attHits.map((item) => (
                         <Card key={item.id} item={item} updateQueue={true} />
@@ -304,8 +323,8 @@ const ContentArea = () => {
                   </div>
 
                   {/* PUNJABI HITS SECTION */}
-                  <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">💫 Punjabi Hits</h2>
-                  <div className="punjabi-hits flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                  <h2 className="text-xl font-semibold ml-2 mt-4 md:mt-6 mb-2">💫 Punjabi Hits</h2>
+                  <div className="punjabi-hits flex gap-2 md:gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-1 md:m-2 py-2 px-1 max-w-full">
                     {punjabiHits && punjabiHits.length > 0 ? (
                       punjabiHits.map((item) => (
                         <Card key={item.id} item={item} updateQueue={true} />
@@ -321,8 +340,8 @@ const ContentArea = () => {
                   </div>
 
                   {/* HARYANVI SECTION */}
-                  <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">🎵 Haryanvi Hits</h2>
-                  <div className="haryanvi flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                  <h2 className="text-xl font-semibold ml-2 mt-4 md:mt-6 mb-2">🎵 Haryanvi Hits</h2>
+                  <div className="haryanvi flex gap-2 md:gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-1 md:m-2 py-2 px-1 max-w-full">
                     {haryanviSongs && haryanviSongs.length > 0 ? (
                       haryanviSongs.map((item) => (
                         <Card key={item.id} item={item} updateQueue={true} />
@@ -338,8 +357,8 @@ const ContentArea = () => {
                   </div>
 
                   {/* TOP 100 SECTION */}
-                  <h2 className="text-xl font-semibold ml-2 mt-6 mb-2">🏆 Top 100</h2>
-                  <div className="top-100 flex gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-2 py-2 px-1">
+                  <h2 className="text-xl font-semibold ml-2 mt-4 md:mt-6 mb-2">🏆 Top 100</h2>
+                  <div className="top-100 flex gap-2 md:gap-4 overflow-x-scroll overflow-y-hidden scrollbar-hide m-1 md:m-2 py-2 px-1 max-w-full">
                     {top100Songs && top100Songs.length > 0 ? (
                       top100Songs.slice(0, 30).map((item) => (
                         <Card key={item.id} item={item} updateQueue={true} />
@@ -370,9 +389,35 @@ function App() {
   return (
     <MusicProvider>
       {/* MAIN CONTENT */}
-      <div className="relative z-10 Homepage min-h-screen bg-gradient-to-br from-black to-[#131b2e] text-white p-6">
-        <div className="hompeageContent min-h-[90vh] rounded-3xl p-4 backdrop-blur-md">
+      <div className="relative z-10 Homepage min-h-screen bg-gradient-to-br from-black to-[#131b2e] text-white p-2 sm:p-4 md:p-6 overflow-x-hidden max-w-[100vw]">
+        <div className="hompeageContent min-h-[90vh] rounded-3xl p-2 md:p-4 backdrop-blur-md overflow-hidden">
           <ContentArea />
+        </div>
+      </div>
+
+      {/* Mobile Fixed Player */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black to-[#1b233d]/95 backdrop-blur-md z-30">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center py-2">
+          {/* Queue Toggle Button - Left position - made smaller */}
+          <div className="pl-2 pr-1">
+            <button 
+              className="bg-[#1b233d] p-1 rounded-lg shadow-lg flex items-center gap-0.5" 
+              onClick={() => setShowMobileQueue(prev => !prev)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5M3.75 6.75h16.5M3.75 17.25h16.5" />
+              </svg>
+              <span className="text-xs">Queue</span>
+            </button>
+          </div>
+          
+          {/* Player in the center column - more space and left-aligned */}
+          <div className="flex justify-center ml-2">
+            <Player alwaysExpanded={true} />
+          </div>
+          
+          {/* Empty div in right column - made smaller */}
+          <div className="w-4"></div>
         </div>
       </div>
     </MusicProvider>

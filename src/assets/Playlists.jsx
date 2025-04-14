@@ -180,21 +180,33 @@ const Playlists = () => {
 };
 
 const PlaylistsContainer = styled.div`
-  padding: 20px;
+  padding: 10px;
+  @media (min-width: 640px) {
+    padding: 20px;
+  }
   background: rgba(27, 35, 61, 0.8);
   border-radius: 12px;
   color: white;
 
   .playlists-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    gap: 15px;
+    @media (min-width: 640px) {
+      gap: 20px;
+    }
   }
 
   .playlist-item {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    padding: 20px;
+    padding: 15px;
+    @media (min-width: 640px) {
+      padding: 20px;
+    }
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s, background 0.2s;
@@ -235,9 +247,16 @@ const PlaylistsContainer = styled.div`
 
   .playlist-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
     margin-bottom: 20px;
+    
+    @media (min-width: 640px) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
   }
 
   .back-button, 
@@ -245,7 +264,10 @@ const PlaylistsContainer = styled.div`
     background: rgba(170, 222, 243, 0.2);
     border: none;
     color: #aadeef;
-    padding: 8px 16px;
+    padding: 6px 12px;
+    @media (min-width: 640px) {
+      padding: 8px 16px;
+    }
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;

@@ -153,7 +153,19 @@ const formatDuration = (seconds) => {
 
 const StyledWrapper = styled.div`
   .card {
-    width: 230px;
+    width: 180px;
+    @media (min-width: 640px) {
+      width: 210px;
+    }
+    @media (min-width: 768px) {
+      width: 230px;
+    }
+    /* Mobile constraint to prevent overflow */
+    @media (max-width: 639px) {
+      width: 155px;
+      min-width: 155px;
+      max-width: 155px;
+    }
     height: 280px; /* Set fixed height for consistency */
     border-radius: 20px;
     background: #1b233d;

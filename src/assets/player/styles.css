@@ -1,24 +1,44 @@
 .queue-container {
   background-color: transparent;
   border-radius: 12px;
-  padding: 16px;
-  max-height: 60vh;
+  padding: 10px;
+  max-height: 80vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .queue-container {
+    padding: 16px;
+    max-height: 60vh;
+  }
 }
 
 .queue-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+  .queue-header {
+    margin-bottom: 16px;
+  }
 }
 
 .queue-title {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   color: #aadeef;
+}
+
+@media (min-width: 768px) {
+  .queue-title {
+    font-size: 1.2rem;
+  }
 }
 
 .queue-actions {
@@ -198,4 +218,20 @@
 .queue-content.expanded::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 4px;
+}
+
+/* Mobile queue sidebar specific styles */
+@media (max-width: 767px) {
+  .queue-content.expanded {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .queue-songs {
+    max-height: 60vh;
+  }
+  
+  .now-playing-song {
+    flex-wrap: nowrap;
+  }
 } 
